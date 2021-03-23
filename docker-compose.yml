@@ -14,21 +14,6 @@ services:
         environment:
             MYSQL_ROOT_PASSWORD: somewordpress
 
-    # slim:
-    #     depends_on:
-    #         - db
-    #     image: php:7-alpine
-    #     working_dir: /var/www
-    #     command: php -S 0.0.0.0:8000 -t public
-    #     environment:
-    #         docker: "true"
-    #     ports:
-    #         - 8000:8000
-    #     volumes:
-    #         - .:/var/www
-    #         - ./php.ini:/usr/local/etc/php/php.ini
-    #         - logs:/var/www/logs
-
     server:
         depends_on:
             - db
