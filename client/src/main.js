@@ -4,21 +4,30 @@ import page from 'page';
 import { getTables, getRows, getPk } from './api';
 import TablesList from './tables-list';
 import RowsList from './rows-list';
+import SameCountFilter from './same-count-filter';
 
 class Main {
   constructor() {
     this.renderTables = this.renderTables.bind(this);
     this.onTableSelected = this.onTableSelected.bind(this);
     this.showTableRows = this.showTableRows.bind(this);
+
     this.tablesLists = null;
     this.slot = document.getElementById('slot');
+
+    // Sub-components
+    this.SameCountFilter = new SameCountFilter('show-hide-same-count');
+
+    this.setupRoutes();
+    this.bindEventListeners();
+  }
+
+  setupRoutes() {
     page('/', this.renderTables);
     page('/:table', this.showTableRows);
     page();
-    // this.bindEventListeners();
   }
 
-  // eslint-disable-next-line class-methods-use-this
   init() {
     PubSub.subscribe('table:select', this.onTableSelected);
     getTables()
@@ -31,12 +40,11 @@ class Main {
       });
   }
 
-  // eslint-disable-next-line class-methods-use-this
   onTableSelected(msg, table) {
     page(`/${table}`);
   }
 
-  renderTables() {
+  renderTables(doHideSameCount = false) {
     if (!this.tablesLists) return;
     this.slot.innerHTML = `
     <div class="tables-wrapper">
@@ -48,10 +56,9 @@ class Main {
       </div>
     </div>
     `;
-    this.tablesLists.forEach((t) => t.render());
+    this.tablesLists.forEach((t) => t.render(doHideSameCount));
   }
 
-  // eslint-disable-next-line class-methods-use-this
   async showTableRows(ctx) {
     const { table } = ctx.params;
     const allRows = await getRows(table);
@@ -74,9 +81,9 @@ class Main {
     rowsLists.forEach((rowList) => rowList.render());
   }
 
-  // bindEventListeners() {
-  //   PubSub.subscribe(network.onTablesReceived, this.renderTables);
-  // }
+  bindEventListeners() {
+    PubSub.subscribe('show-hide-same-count:changed', (evtName, doHide) => this.renderTables(doHide));
+  }
 }
 
 new Main().init();

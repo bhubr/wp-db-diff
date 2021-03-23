@@ -10,6 +10,10 @@
     nav {
       display: flex;
     }
+    nav ul {
+      padding-left: 0;
+      flex-grow: 1;
+    }
     nav li {
       list-style-type: none;
     }
@@ -35,13 +39,17 @@
 </head>
 <body>
 
-  <nav>
-    <ul>
-      <li><a href="/">Home</a></li>
-    </ul>
-  </nav>
-
   <main class="container-fluid">
+
+    <nav>
+      <ul>
+        <li><a href="/">Home</a></li>
+      </ul>
+      <div class="filters">
+        <input id="show-hide-same-count" type="checkbox" />
+        <label for="show-hide-same-count">Hide same count</label>
+      </div>
+    </nav>
 
     <div id="slot"></div>
   </main>
