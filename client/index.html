@@ -5,24 +5,45 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
+  <link rel="stylesheet" href="css/bootstrap.min.css">
   <style>
-    main {
+    nav {
       display: flex;
     }
-    main > div {
+    nav li {
+      list-style-type: none;
+    }
+    main {
+      margin-top: 0.5em;
+      margin-bottom: 0.5em;
+    }
+    .tables-wrapper {
+      display: flex;
+      justify-content: space-between;
+    }
+    .tables-wrapper > div {
+      width: 49%;
+    }
+    .rows-wrapper {
+      display: flex;
+      justify-content: space-between;
+    }
+    .rows-wrapper > div {
       width: 49%;
     }
   </style>
 </head>
 <body>
 
-  <main>
-    <div id="db1">
-      <div class="tables"></div>
-    </div>
-    <div id="db2">
-      <div class="tables"></div>
-    </div>
+  <nav>
+    <ul>
+      <li><a href="/">Home</a></li>
+    </ul>
+  </nav>
+
+  <main class="container-fluid">
+
+    <div id="slot"></div>
   </main>
 
   <script src="src/main.js"></script>

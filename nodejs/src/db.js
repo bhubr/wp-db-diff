@@ -20,8 +20,23 @@ class Database {
       .then((rows) => rows.map((row) => row.count));
   }
 
+  getPk(table) {
+    console.log('getPk', table)
+    return this.query(
+      `SELECT k.COLUMN_NAME AS colName
+      FROM information_schema.table_constraints t
+      LEFT JOIN information_schema.key_column_usage k
+      USING(constraint_name,table_schema,table_name)
+      WHERE t.constraint_type='PRIMARY KEY'
+          AND t.table_schema=DATABASE()
+          AND t.table_name='${this.wpPrefix}${table}';`,
+    )
+      .then(d => console.log('pk', table, d) || d)
+      .then((rows) => rows.map(({ colName }) => colName));
+  }
+
   getRows(table, from, count) {
-    const limit = `LIMIT ${from},${count}`;
+    const limit = ''; // `LIMIT ${from},${count}`;
     return this.query(`SELECT * FROM ${this.wpPrefix}${table} ${limit}`);
   }
 }

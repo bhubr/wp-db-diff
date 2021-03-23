@@ -14,12 +14,20 @@ app.use(cors());
 app.get('/', (req, res) => res.send('Express server is up and running!'));
 
 const getDb = (req, res, next) => {
-  console.log(req.params)
   req.db = di.get(req.params.db);
+  if (req.params.table) req.table = req.params.table;
   next();
 };
 
 app.get('/:db/tables', getDb, (req, res) => req.db.getTables().then((tables) => res.send(tables)));
+
+app.get('/:db/tables/:table/rows', getDb, (req, res) => {
+  req.db.getRows(req.table).then((rows) => res.send(rows));
+});
+
+app.get('/:db/tables/:table/pk', getDb, (req, res) => {
+  req.db.getPk(req.table).then((rows) => res.send(rows));
+});
 
 app.listen(port, (err) => {
   if (err) {
