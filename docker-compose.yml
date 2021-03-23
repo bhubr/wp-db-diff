@@ -5,14 +5,40 @@ volumes:
         driver: local
 
 services:
-    slim:
-        image: php:7-alpine
-        working_dir: /var/www
-        command: php -S 0.0.0.0:8080 -t public
+    db:
+        image: mysql:5.7
+        command: --sql_mode=ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION
+        volumes:
+            - ./db_data:/var/lib/mysql
+        restart: always
+        environment:
+            MYSQL_ROOT_PASSWORD: somewordpress
+
+    # slim:
+    #     depends_on:
+    #         - db
+    #     image: php:7-alpine
+    #     working_dir: /var/www
+    #     command: php -S 0.0.0.0:8000 -t public
+    #     environment:
+    #         docker: "true"
+    #     ports:
+    #         - 8000:8000
+    #     volumes:
+    #         - .:/var/www
+    #         - ./php.ini:/usr/local/etc/php/php.ini
+    #         - logs:/var/www/logs
+
+    server:
+        depends_on:
+            - db
+        image: node:12-alpine
+        working_dir: /app
+        command: npx nodemon src/server
         environment:
             docker: "true"
+            PORT: 8000
         ports:
-            - 8080:8080
+            - 8000:8000
         volumes:
-            - .:/var/www
-            - logs:/var/www/logs
+            - ./nodejs:/app
