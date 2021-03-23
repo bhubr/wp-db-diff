@@ -166,6 +166,7 @@ function expectString (str) {
   const [strMatch, bytes] = readBytes(str, len)
 
   if (bytes !== len) {
+    console.log(str);
     throw SyntaxError(`Expected string of ${len} bytes, but got ${bytes}`)
   }
 
@@ -389,7 +390,8 @@ export default function unserialize (str) {
 
     return expectType(str, initCache())[0]
   } catch (err) {
-    console.error(err, str)
+    console.error(err)
+    console.log(str.substr(0, 100));
     return 'UNSERIALIZE ERROR /// ' + str.substr(0, 30);
   }
 }

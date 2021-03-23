@@ -8,27 +8,38 @@ const colorClasses = [
   'text-danger', 'text-success',
 ];
 
+function escapeHTML(str) {
+  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function metaRenderer(item, { meta_id: id, meta_key: k, meta_value: v }, pks) {
+  // const pkSpan = document.createTextNode(pks);
+  // item.appendChild(pkSpan);
+  // const keyEl = document.createElement('STRONG');
+  // keyEl.innerText = ` ${k} `;
+  // item.appendChild(keyEl);
+  const base = `${pks} <strong> ${k} `;
+  let val;
+  if (/a:/.test(v)) {
+    const unserializedVal = unserialize(v);
+    // val = JSONTree.create(unserializedVal);
+    val = v.substr(0, 100);
+    console.log(id, val, unserializedVal);
+  } else if (v.includes('tve')) {
+    val = escapeHTML(v).substr(0, 100);
+  } else {
+    val = v;
+  }
+  item.innerHTML = `${base}${val}`;
+}
+
 const textColumnRenderers = {
   posts: 'post_title',
   comments: 'comment_content',
   wpil_report_links: 'raw_url',
-  usermeta: (item, { meta_key: k, meta_value: v }, pks) => {
-    // const pkSpan = document.createTextNode(pks);
-    // item.appendChild(pkSpan);
-    // const keyEl = document.createElement('STRONG');
-    // keyEl.innerText = ` ${k} `;
-    // item.appendChild(keyEl);
-    const base = `${pks} <strong> ${k} `;
-    let val;
-    if (/a:/.test(v)) {
-      // valEl = document.createTextNode('pouet');
-      const unserializedVal = unserialize(v);
-      val = JSONTree.create(unserializedVal);
-    } else {
-      val = v;
-    }
-    item.innerHTML = `${base}${val}`;
-  },
+  terms: 'name',
+  usermeta: metaRenderer,
+  postmeta: metaRenderer,
 };
 
 export default class RowsList {
@@ -38,6 +49,7 @@ export default class RowsList {
     this.index = index;
     this.rows = rows;
     this.pk = pk;
+    console.log(pk);
     this.haveSamePk = (a, b) => pk.reduce(
       (carry, col) => carry && (a[col] === b[col]), true,
     );
@@ -75,7 +87,7 @@ export default class RowsList {
         renderer(item, row, pks);
         break;
       default:
-        item.innerHTML = 'N/A';
+        item.innerHTML = `${pks} N/A`;
     }
   }
 
