@@ -7,9 +7,10 @@ volumes:
 services:
     db:
         image: mysql:5.7
-        command: --sql_mode=ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION
+        # command:  --character-set-server=utf8 --collation-server=utf8_general_ci --sql_mode=ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION
         volumes:
             - ./db_data:/var/lib/mysql
+            - ./mycustom.cnf:/etc/mysql/conf.d/custom.cnf
         restart: always
         environment:
             MYSQL_ROOT_PASSWORD: somewordpress
@@ -27,3 +28,12 @@ services:
             - 8000:8000
         volumes:
             - ./nodejs:/app
+
+    phpmyadmin:
+        image: phpmyadmin
+        restart: always
+        ports:
+            - 8888:80
+        environment:
+        - PMA_HOST=db
+        - PMA_ARBITRARY=1

@@ -35,7 +35,7 @@ class Database {
   }
 
   getRows(table) { // , from, count) {
-    const limit = ''; // 'LIMIT 0,300'; // `LIMIT ${from},${count}`;
+    const limit = ''; // 'LIMIT 0,500'; // `LIMIT ${from},${count}`;
     return this.query(`SELECT * FROM ${this.wpPrefix}${table} ${limit}`);
   }
 }
