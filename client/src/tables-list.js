@@ -35,6 +35,8 @@ export default class TablesList {
   }
 
   render(doHideSameCount) {
+    let hidden = 0;
+
     // Create ul
     const list = document.createElement('UL');
     list.classList.add('list-group');
@@ -46,6 +48,7 @@ export default class TablesList {
       const elInOther = this.isInOtherDb(t.name);
 
       if (elInThis && elInOther && (elInThis.count === elInOther.count) && doHideSameCount) {
+        hidden += 1;
         return;
       }
 
@@ -63,8 +66,10 @@ export default class TablesList {
       }
 
       // Show rows for this table
-      item.addEventListener('click', () => PubSub.publish('table:select', t));
+      item.addEventListener('click', () => PubSub.publish('table:select', t.name));
     });
     document.querySelector(`#${this.id} .tables`).appendChild(list);
+
+    console.log('items hidden', hidden);
   }
 }
