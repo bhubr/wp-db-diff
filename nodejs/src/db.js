@@ -17,11 +17,10 @@ class Database {
 
   countRows(table) {
     return this.query(`SELECT COUNT(*) AS count FROM ${this.wpPrefix}${table}`)
-      .then((rows) => rows.map((row) => row.count));
+      .then((rows) => rows[0].count);
   }
 
   getPk(table) {
-    console.log('getPk', table)
     return this.query(
       `SELECT k.COLUMN_NAME AS colName
       FROM information_schema.table_constraints t
@@ -31,11 +30,11 @@ class Database {
           AND t.table_schema=DATABASE()
           AND t.table_name='${this.wpPrefix}${table}';`,
     )
-      .then(d => console.log('pk', table, d) || d)
+      .then((d) => console.log('pk', table, d) || d)
       .then((rows) => rows.map(({ colName }) => colName));
   }
 
-  getRows(table, from, count) {
+  getRows(table) { // , from, count) {
     const limit = ''; // 'LIMIT 0,300'; // `LIMIT ${from},${count}`;
     return this.query(`SELECT * FROM ${this.wpPrefix}${table} ${limit}`);
   }

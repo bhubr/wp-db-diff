@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');
+const bluebird = require('bluebird');
 const { port } = require('./config');
 const di = require('./di');
 
@@ -9,7 +10,11 @@ const di = require('./di');
 
 const app = express();
 app.use(morgan('dev'));
-app.use(cors());
+app.use(
+  cors({
+    exposedHeaders: ['x-row-count'],
+  }),
+);
 
 app.get('/', (req, res) => res.send('Express server is up and running!'));
 
@@ -19,9 +24,34 @@ const getDb = (req, res, next) => {
   next();
 };
 
-app.get('/:db/tables', getDb, (req, res) => req.db.getTables().then((tables) => res.send(tables)));
+const rowCounts = {
+  db1: {},
+  db2: {},
+};
+
+bluebird.each(Object.keys(rowCounts), async (db) => {
+  const dbInstance = di.get(db);
+  const tables = await dbInstance.getTables();
+  await bluebird.each(tables, async (table) => {
+    const count = await dbInstance.countRows(table);
+    rowCounts[db][table] = count;
+  });
+});
+
+app.get(
+  '/:db/tables',
+  getDb,
+  (req, res) => req.db
+    .getTables()
+    .then(
+      (tables) => res.send(tables.map((name) => ({
+        name, count: rowCounts[req.params.db][name],
+      }))),
+    ),
+);
 
 app.get('/:db/tables/:table/rows', getDb, (req, res) => {
+  console.log(req.table, rowCounts);
   req.db.getRows(req.table).then((rows) => res.send(rows));
 });
 
