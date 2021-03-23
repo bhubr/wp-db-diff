@@ -9,13 +9,15 @@ export default class BreadCrumb {
   }
 
   push(link) {
+    console.log('push', link);
     this.links.push(link);
     this.render();
   }
 
   pop() {
     if (this.links.length > 1) {
-      this.links.pop();
+      const link = this.links.pop();
+      console.log('pop', link);
     }
     this.render();
   }
@@ -26,7 +28,7 @@ export default class BreadCrumb {
       const li = document.createElement('LI');
       this.el.appendChild(li);
       li.classList.add('breadcrumb-item');
-      if (idx === links.length - 1) {
+      if (idx > 0 && idx === links.length - 1) {
         li.classList.add('active');
         li.ariaCurrent = 'page';
         li.innerText = label;

@@ -1,13 +1,40 @@
-import PubSub from 'pubsub-js';
+/* eslint-disable no-param-reassign */
+/* global JSONTree */
 import equal from 'fast-deep-equal';
+import unserialize from './unserialize';
+// import JSONTree from './json-tree';
 
 const colorClasses = [
   'text-danger', 'text-success',
 ];
 
+const textColumnRenderers = {
+  posts: 'post_title',
+  comments: 'comment_content',
+  wpil_report_links: 'raw_url',
+  usermeta: (item, { meta_key: k, meta_value: v }, pks) => {
+    // const pkSpan = document.createTextNode(pks);
+    // item.appendChild(pkSpan);
+    // const keyEl = document.createElement('STRONG');
+    // keyEl.innerText = ` ${k} `;
+    // item.appendChild(keyEl);
+    const base = `${pks} <strong> ${k} `;
+    let val;
+    if (/a:/.test(v)) {
+      // valEl = document.createTextNode('pouet');
+      const unserializedVal = unserialize(v);
+      val = JSONTree.create(unserializedVal);
+    } else {
+      val = v;
+    }
+    item.innerHTML = `${base}${val}`;
+  },
+};
+
 export default class RowsList {
-  constructor(id, index, rows, pk) {
+  constructor(id, table, index, rows, pk) {
     this.id = id;
+    this.table = table;
     this.index = index;
     this.rows = rows;
     this.pk = pk;
@@ -35,6 +62,23 @@ export default class RowsList {
     return this.rows[(this.index + 1) % 2].find((el) => this.haveSamePk(el, row));
   }
 
+  renderRowText(item, row) {
+    const renderer = textColumnRenderers[this.table];
+    const pks = this.pk.map((k) => row[k]).join();
+    let text;
+    switch (typeof renderer) {
+      case 'string':
+        text = row[renderer].substr(0, 50);
+        item.innerHTML = `${pks} ${text}`;
+        break;
+      case 'function':
+        renderer(item, row, pks);
+        break;
+      default:
+        item.innerHTML = 'N/A';
+    }
+  }
+
   render() {
     // Object.keys(tables).forEach((db) => {
     const list = document.createElement('UL');
@@ -46,14 +90,25 @@ export default class RowsList {
       list.appendChild(item);
       const isInThis = this.isInThisTable(r);
       const isInOther = this.isInOtherTable(r);
-      item.innerHTML = isInThis ? this.pk.map((k) => r[k]).join() : '&nbsp;';
+      // const text = (r[] || 'N/A').substr(0, 50);
+      // if it is in this table, render it
+      if (isInThis) {
+        this.renderRowText(item, r);
+      } else {
+        item.innerHTML = '&nbsp';
+      }
+      // item.innerHTML = isInThis ? `${this.pk.map((k) => r[k]).join()} ${text}` : '&nbsp;';
       if (!isInOther) item.classList.add(colorClasses[this.index]);
       if (isInThis && isInOther) {
         rInOther = this.rows[(this.index + 1) % 2].find((el) => this.haveSamePk(el, r));
         const areEqual = equal(r, rInOther);
         if (!areEqual) item.classList.add('text-info');
       }
-      item.addEventListener('click', () => console.log(r, rInOther));
+      item.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (e.target.className.includes('jst')) return;
+        console.log(r, rInOther);
+      });
     });
     document.querySelector(`#${this.id} .rows`).appendChild(list);
   }

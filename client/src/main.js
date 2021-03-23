@@ -69,8 +69,8 @@ class Main {
     const allRows = await getRows(table);
     const [pk] = await getPk(table);
     const rowsLists = [
-      new RowsList('db1', 0, allRows, pk),
-      new RowsList('db2', 1, allRows, pk),
+      new RowsList('db1', table, 0, allRows, pk),
+      new RowsList('db2', table, 1, allRows, pk),
     ];
     this.slot.innerHTML = `
     <div class="rows-wrapper">

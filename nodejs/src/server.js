@@ -52,7 +52,10 @@ app.get(
 
 app.get('/:db/tables/:table/rows', getDb, (req, res) => {
   console.log(req.table, rowCounts);
-  req.db.getRows(req.table).then((rows) => res.send(rows));
+  req.db.getRows(req.table).then((rows) => res.send(rows)).catch((err) => {
+    console.error(err);
+    res.send([]);
+  });
 });
 
 app.get('/:db/tables/:table/pk', getDb, (req, res) => {
