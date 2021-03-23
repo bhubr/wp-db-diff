@@ -1,1 +1,3 @@
-export const serverPort = 8000;
+export default {
+  serverPort: 8000,
+};

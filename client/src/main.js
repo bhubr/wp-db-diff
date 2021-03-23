@@ -2,7 +2,6 @@ import 'regenerator-runtime';
 import PubSub from 'pubsub-js';
 import page from 'page';
 import { getTables, getRows, getPk } from './api';
-import { network } from './event-types';
 import TablesList from './tables-list';
 import RowsList from './rows-list';
 
@@ -57,7 +56,7 @@ class Main {
     const { table } = ctx.params;
     const allRows = await getRows(table);
     const [pk] = await getPk(table);
-    console.log(allRows, pk)
+    console.log(allRows, pk);
     const rowsLists = [
       new RowsList('db1', 0, allRows, pk),
       new RowsList('db2', 1, allRows, pk),

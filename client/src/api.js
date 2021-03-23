@@ -1,5 +1,7 @@
 import axios from 'axios';
-import { serverPort } from './config';
+import config from './config';
+
+const { serverPort } = config;
 
 const instance = axios.create({
   baseURL: `http://localhost:${serverPort}`,
