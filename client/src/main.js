@@ -5,6 +5,7 @@ import { getTables, getRows, getPk } from './api';
 import TablesList from './tables-list';
 import RowsList from './rows-list';
 import SameCountFilter from './same-count-filter';
+import Breadcrumb from './breadcrumb';
 
 class Main {
   constructor() {
@@ -16,7 +17,9 @@ class Main {
     this.slot = document.getElementById('slot');
 
     // Sub-components
-    this.SameCountFilter = new SameCountFilter('show-hide-same-count');
+    this.sameCountFilter = new SameCountFilter('show-hide-same-count');
+    this.breadcrumb = new Breadcrumb('breadcrumb');
+    this.breadcrumb.render();
 
     this.setupRoutes();
     this.bindEventListeners();
@@ -46,6 +49,7 @@ class Main {
 
   renderTables(doHideSameCount = false) {
     if (!this.tablesLists) return;
+    this.breadcrumb.pop();
     this.slot.innerHTML = `
     <div class="tables-wrapper">
       <div id="db1">
@@ -61,9 +65,9 @@ class Main {
 
   async showTableRows(ctx) {
     const { table } = ctx.params;
+    this.breadcrumb.push({ href: ctx.path, label: table });
     const allRows = await getRows(table);
     const [pk] = await getPk(table);
-    console.log(allRows, pk);
     const rowsLists = [
       new RowsList('db1', 0, allRows, pk),
       new RowsList('db2', 1, allRows, pk),

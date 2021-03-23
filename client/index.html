@@ -41,15 +41,14 @@
 
   <main class="container-fluid">
 
-    <nav>
-      <ul>
-        <li><a href="/">Home</a></li>
-      </ul>
-      <div class="filters">
-        <input id="show-hide-same-count" type="checkbox" />
-        <label for="show-hide-same-count">Hide same count</label>
-      </div>
+    <nav aria-label="breadcrumb">
+      <ol id="breadcrumb" class="breadcrumb">
+      </ol>
     </nav>
+    <div class="filters">
+      <input id="show-hide-same-count" type="checkbox" />
+      <label for="show-hide-same-count">Hide same count</label>
+    </div>
 
     <div id="slot"></div>
   </main>
