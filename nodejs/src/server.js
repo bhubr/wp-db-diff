@@ -36,6 +36,11 @@ bluebird.each(Object.keys(rowCounts), async (db) => {
     const count = await dbInstance.countRows(table);
     rowCounts[db][table] = count;
   });
+  await bluebird.each(tables, async (table) => {
+    const pks = await dbInstance.getPk(table);
+    console.log(table, pks.length, pks.length !== 1 ? 'WARNING' : '');
+  });
+  // console.log(rowCounts);
 });
 
 app.get(

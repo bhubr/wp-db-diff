@@ -30,7 +30,6 @@ class Database {
           AND t.table_schema=DATABASE()
           AND t.table_name='${this.wpPrefix}${table}';`,
     )
-      .then((d) => console.log('pk', table, d) || d)
       .then((rows) => rows.map(({ colName }) => colName));
   }
 
